@@ -1,5 +1,6 @@
 import sys
 
+sys.setrecursionlimit(10 ** 8)
 input = sys.stdin.readline
 
 '''
@@ -8,24 +9,22 @@ input = sys.stdin.readline
 '''
 
 
-def recur(half, whole):
-    global total
+def recur(whole, half):
+    if half < 0 or half > N or whole < 0 or whole > N:
+        return 0
 
-    if half == 0 and whole == 0:
-        total += 1
-        return
+    if dp[half][whole] != 0:
+        return dp[whole][half]
 
-    if half > 0:
-        recur(half - 1, whole)
-    if whole > 0:
-        recur(half + 1, whole - 1)
-    return
+    dp[whole][half] = recur(whole, half + 1) + recur(whole + 1, half - 1)
+    return dp[whole][half]
 
 
 N = int(input())
 while N != 0:
     total = 0
-    recur(0, N)
-    print(total)
+    dp = [[0 for _ in range((N + 1))] for _ in range(N + 1)]
+    dp[N][0], dp[0][N] = 1, 1
+    recur(0, 0)
+    print(*dp, sep='\n')
     N = int(input())
-
