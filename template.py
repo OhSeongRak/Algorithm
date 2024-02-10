@@ -11,5 +11,5 @@ def solution():
 
 N = int(input())
 lst = list(map(int, input().split()))
-K = int(input())
+print(*lst, sep='\n')
 print(solution())
