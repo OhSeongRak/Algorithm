@@ -4,8 +4,6 @@ input = sys.stdin.readline
 
 
 def solution():
-
-
     return
 
 
