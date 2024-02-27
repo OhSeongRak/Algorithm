@@ -11,6 +11,7 @@ def in_range(r, c):
 
 
 def solution():
+
     pq = []
     dr, dc = [-1, 0, 1, 0], [0, 1, 0, -1]
     visited = [[False] * C for _ in range(R)]
