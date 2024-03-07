@@ -6,6 +6,7 @@ input = sys.stdin.readline
 
 
 def check(line):
+
     for cur in range(N):
         cnt = 0
         for i in range(cur):
