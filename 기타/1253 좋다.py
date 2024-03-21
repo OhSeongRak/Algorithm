@@ -10,6 +10,7 @@ def solution():
         expt = lst[:i] + lst[i + 1:]
         target = lst[i]
         l, r = 0, N - 2
+
         while l < r:
             if expt[l] + expt[r] == target:
                 answer += 1
