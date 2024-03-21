@@ -15,12 +15,11 @@ def solution():
             avail -= num
             continue
 
-        num -= avail
+        num -= avail  # 일단 가용인원 태움
         avail = 0
         count = math.ceil(num / K)  # 버스가 왕복 해야할 횟수
         answer += (S - pos) * 2 * count
         avail += K * count - num
-        # print("answer: ", answer, "avail: ", avail)
 
     avail = 0
     for pos, num in lst[::-1]:  # 학교 기준 오른쪽
@@ -31,12 +30,11 @@ def solution():
             avail -= num
             continue
 
-        num -= avail
+        num -= avail # 일단 가용인원 태움
         avail = 0
         count = math.ceil(num / K)  # 버스가 왕복 해야할 횟수
         answer += (pos - S) * 2 * count
         avail += K * count - num
-        # print("answer: ", answer, "avail: ", avail)
 
     return answer
 
