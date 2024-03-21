@@ -30,7 +30,7 @@ def solution():
             avail -= num
             continue
 
-        num -= avail # 일단 가용인원 태움
+        num -= avail  # 일단 가용인원 태움
         avail = 0
         count = math.ceil(num / K)  # 버스가 왕복 해야할 횟수
         answer += (pos - S) * 2 * count
