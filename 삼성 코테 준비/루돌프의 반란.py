@@ -1,7 +1,5 @@
 import sys
 
-from collections import deque
-
 input = sys.stdin.readline
 '''
 1. 루돌프의 움직임
@@ -36,30 +34,99 @@ def in_range(r, c):
     return False
 
 
+def rudolf_to_santa(r1, c1, r2, c2):
+    r, c = 0, 0
+    if r2 - r1 != 0:
+        r = (r2 - r1) // abs(r2 - r1)
+    if c2 - c1 != 0:
+        c = (c2 - c1) // abs(c2 - c1)
+
+    return r, c
+
+
+def santa_to_rudolf(r1, c1, r2, c2):
+    distance = (r1 - r2) * (r1 - r2) + (c1 - c2) * (c1 - c2)
+    drc = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    ret_r, ret_c = 0, 0
+
+    for dr, dc in drc:
+        nr = r1 + dr
+        nc = c1 + dc
+        if not in_range(nr, nc) or check_santa(nr, nc) != -1:
+            continue
+
+        tmp = (nr - r2) * (nr - r2) + (nc - c2) * (nc - c2)
+        if distance > tmp:
+            ret_r, ret_c = dr, dc
+            distance = tmp
+
+    return ret_r, ret_c
+
+
 def move_rudolf():
-    queue = deque()
-    queue.append((rudolf[0], rudolf[1]))
-    visited = [[False] * N for _ in range(N)]
-    s_number = -1
+    s_info = [0, 0, 0, sys.maxsize]  # 산타 번호, r, c, 거리
+    for i in range(P):
+        if status[i] == -1:
+            continue
 
-    while queue:
-        r, c = queue.popleft()
-        visited[r][c] = True
+        tmp = (rudolf[0] - santas[i][0]) * (rudolf[0] - santas[i][0]) + (rudolf[1] - santas[i][1]) * (
+                rudolf[1] - santas[i][1])
 
-        s_number = check_santa(r, c)
-        if s_number != -1:
+        if tmp < s_info[3]:
+            s_info = [i, santas[i][0], santas[i][1], tmp]
+        elif tmp == s_info[3]:
+            if s_info[1] < santas[i][0]:
+                s_info = [i, santas[i][0], santas[i][1], tmp]
+            elif s_info[1] == santas[i][0] and s_info[2] < santas[i][1]:
+                s_info = [i, santas[i][0], santas[i][1], tmp]
+
+    cr, cc = rudolf_to_santa(rudolf[0], rudolf[1], santas[s_info[0]][0], santas[s_info[0]][1])
+    rudolf[0] += cr
+    rudolf[1] += cc
+
+    check_collision(cr, cc, C)
+    return
+
+
+def move_santa(number):
+    sr, sc = santa_to_rudolf(santas[number][0], santas[number][1], rudolf[0], rudolf[1])
+    santas[number][0] += sr
+    santas[number][1] += sc
+
+    if santas[number][0] == rudolf[0] and santas[number][1] == rudolf[1]:
+        push_santa(number, -sr, -sc, D)
+        score[i] += D
+        if status[i] != -1:  # 퇴장되지 않았다면 기절
+            status[i] = 2
+
+    return
+
+
+def push_santa(number, cr, cc, power):
+    if not in_range(santas[number][0] + cr * power, santas[number][1] + cc * power):
+        santas[number][0] += cr * power
+        santas[number][1] += cc * power
+        status[number] = -1
+        return
+
+    s = check_santa(santas[number][0] + cr * power, santas[number][1] + cc * power)
+    if s != -1:
+        push_santa(s, cr, cc, 1)
+
+    santas[number][0] += cr * power
+    santas[number][1] += cc * power
+
+    return
+
+
+def check_collision(cr, cc, power):
+    for i in range(P):
+        if rudolf[0] == santas[i][0] and rudolf[1] == santas[i][1]:
+            push_santa(i, cr, cc, power)
+            score[i] += power
+            if status[i] != -1:  # 퇴장되지 않았다면 기절
+                status[i] = 2
             break
-
-        for i in range(4):
-            nr = r + dr[i]
-            nc = c + dc[i]
-
-            if not in_range(nr, nc) or visited[nr][nc]:
-                continue
-
-            queue.append((nr, nc))
-            visited[nr][nc] = True
-
 
     return
 
@@ -69,14 +136,31 @@ rudolf = list(map(int, input().split()))
 rudolf[0] -= 1
 rudolf[1] -= 1
 
-santas = []
+santas = [[0] * 2 for _ in range(P)]
+
 for _ in range(P):
-    _, r, c = map(int, input().split())
-    santas.append([r - 1, c - 1])
+    n, r, c = map(int, input().split())
+    santas[n - 1][0], santas[n - 1][1] = r - 1, c - 1
 
 score, status = [0] * P, [0] * P  # 양의 정수면 기절 카운트, -1이면 탈락
 dr, dc = [1, 0, 0, -1], [0, 1, -1, 0]
 
 # Solution
 for _ in range(M):
-    move_rudolf()
+    move_rudolf()  # 루돌프 이동
+    for i in range(P):
+        if status[i] == 0:
+            move_santa(i)  # 산타 이동
+
+    for i in range(P):
+        if status[i] != -1:  # 퇴장 아니면
+            score[i] += 1
+            status[i] = max(0, status[i] - 1)  # 기절 시간 줄임
+
+    for i in range(P):
+        if status[i] != -1:
+            break
+    else:
+        break
+
+print(*score)
