@@ -5,20 +5,14 @@ input = sys.stdin.readline
 
 
 def solution():
-    global lst
-
-    sorted_lst = list(set(lst))
-    sorted_lst.sort()
-    dic, ret = defaultdict(int), [0] * N
+    sorted_lst = sorted(list(set(lst)))
+    dic = defaultdict(int)
 
     for i in range(len(sorted_lst)):
         dic[sorted_lst[i]] = i
 
-    for i in range(N):
-        ret[i] = dic[lst[i]]
-
-    for k in ret:
-        print(k, end=' ')
+    for k in lst:
+        print(dic[k], end=' ')
 
     return
 
