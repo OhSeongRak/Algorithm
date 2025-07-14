@@ -1,7 +1,6 @@
 package implement;
 
 import java.io.*;
-import java.util.*;
 
 public class BJ_1913 {
     public static void main(String[] args) throws IOException {
@@ -11,11 +10,12 @@ public class BJ_1913 {
         int[][] board = new int[N][N];
         int target = Integer.parseInt(br.readLine());
 
-        board = solution(N, board, target);
+        board = solution(N, board);
         printBoard(N, board);
+        findNumberPosition(N, target, board);
     }
 
-    public static int[][] solution(int N, int[][] board, int target) {
+    public static int[][] solution(int N, int[][] board) {
         int cur = N * N;
 
         for (int start = 0; start <= N / 2; start++) {
@@ -41,12 +41,27 @@ public class BJ_1913 {
     }
 
     public static void printBoard(int N, int[][] board) {
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                System.out.printf("%3d", board[i][j]);
+                sb.append(board[i][j]).append(" ");
             }
-            System.out.println();
+            sb.append("\n");
         }
-        System.out.println("===========================================");
+
+        System.out.print(sb);
     }
+
+    public static void findNumberPosition(int N, int target, int[][] board) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (board[i][j] == target) {
+                    System.out.printf("%d %d", i + 1, j + 1);
+                    return;
+                }
+            }
+        }
+    }
+
 }
